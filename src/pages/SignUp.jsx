@@ -2,6 +2,12 @@ import React, { useState } from 'react'
 import {AiFillEyeInvisible, AiFillEye} from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 import OAuth from '../components/OAuth';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { db } from '../firebase';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 
 const initialValues = {
   name: '',
@@ -14,6 +20,7 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
 
   const { name, email, password } = formData;
+  const navigate = useNavigate();
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -21,6 +28,33 @@ export default function SignUp() {
       [e.target.id]: e.target.value,
     }));
   };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      updateProfile(auth.currentUser, {
+        displayName: name
+      });
+
+      const user = userCredential.user;
+
+      const formDataCopy = {...formData};
+      delete formDataCopy.password;
+      formDataCopy.timestamp = serverTimestamp();
+
+      await setDoc(doc(db, 'users', user.uid), formDataCopy);
+      toast.success('Registered successfully');
+      //navigate to homepage after store user to db
+      navigate('/');
+
+    } catch (error) {
+      toast.error('Something went wrong with the registration!')
+    }
+  }
 
   return (
     <section className='max-w-6xl mx-auto'>
@@ -31,11 +65,11 @@ export default function SignUp() {
             <img className='w-full rounded-2xl' src='https://images.unsplash.com/flagged/photo-1564767609342-620cb19b2357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80' alt='Login' />
         </div>
         <div className='w-full md:w-8/12 lg:w-5/12 lg:ml-20'>
-          <form>
-            <input className='mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type='text' id='text' value={name} onChange={onChange} placeholder='Full name' />
+          <form onSubmit={onSubmit}>
+            <input className='mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type='text' id='name' value={name} onChange={onChange} placeholder='Full name' />
             <input className='mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type='email' id='email' value={email} onChange={onChange} placeholder='Email address' />
             <div className='relative mb-6'>
-            <input className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type={showPassword ? 'text' : 'password'} id='password' value={password} onChange={onChange} placeholder='Password' />
+            <input className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type={showPassword ? 'text' : 'password'} id='password' value={password} onChange={onChange} placeholder='Password' autoComplete='on' />
             {showPassword ? 
             <AiFillEyeInvisible className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword((prevState) => !prevState)} /> 
             : <AiFillEye className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword((prevState) => !prevState)} />}
