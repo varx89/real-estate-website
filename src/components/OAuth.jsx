@@ -4,10 +4,11 @@ import React from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { toast } from 'react-toastify';
 import { db } from '../firebase';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 
 export default function OAuth() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const onGoogleClick = async() => {
     try {
@@ -27,12 +28,15 @@ export default function OAuth() {
           timestamp: serverTimestamp(),
         });
       }
-      toast.success('Registered successfully');
+      if(location.pathname === '/sign-in'){
+        toast.success('Signed in successfully!');
+      } else {
+        toast.success('Registered successfully');
+      }
       navigate('/');
 
     } catch (error) {
       toast.error('Could not authorize with Google!');
-      console.log(error);
     }
   }
 
