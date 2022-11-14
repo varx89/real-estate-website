@@ -1,5 +1,7 @@
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import OAuth from '../components/OAuth';
 
 
@@ -10,6 +12,17 @@ export default function ForgotPassword() {
     setEmail(e.target.value);
   };
 
+  const onSubmit = async(e) => {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email);
+      toast.success('Email reset password sent!')
+    } catch (error) {
+      toast.error('Could not send reset password!');
+    }
+  }
+
   return (
     <section className='max-w-6xl mx-auto'>
       <h1 className='text-3xl text-center mt-6 font-bold'>Forgot Password</h1>
@@ -19,7 +32,7 @@ export default function ForgotPassword() {
             <img className='w-full rounded-2xl' src='https://images.unsplash.com/flagged/photo-1564767609342-620cb19b2357?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80' alt='Login' />
         </div>
         <div className='w-full md:w-8/12 lg:w-5/12 lg:ml-20'>
-          <form>
+          <form onSubmit={onSubmit}>
             <input className='mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type='email' id='email' value={email} onChange={onChange} placeholder='Email address' />
             <div className='flex justify-between whitespace-nowrap text-sm sm:text-lg'>
               <p className='mb-6'>Don't have an account?
