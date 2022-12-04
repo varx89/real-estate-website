@@ -118,7 +118,7 @@ const Listing = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
                     <Marker position={[listing.geolocation.lat, listing.geolocation.lng]}>
                         <Popup>
-                            A pretty CSS3 popup. <br /> Easily customizable.
+                            {listing.address}
                         </Popup>
                     </Marker>
                 </MapContainer>
