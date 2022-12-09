@@ -39,6 +39,19 @@ export default function SignIn() {
     }
   }
 
+function letTheEye() {
+  if (showPassword) {
+    return(
+      <AiFillEyeInvisible className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword((prevState) => !prevState)} />
+    )
+  } else {
+    return (
+      <AiFillEye className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword((prevState) => !prevState)} />
+    )
+  }
+}
+  
+
   return (
     <section className='max-w-6xl mx-auto'>
       <h1 className='text-3xl text-center mt-6 font-bold'>Sign In</h1>
@@ -52,9 +65,7 @@ export default function SignIn() {
             <input className='mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type='email' id='email' value={email} onChange={onChange} placeholder='Email address' />
             <div className='relative mb-6'>
             <input className='w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out' type={showPassword ? 'text' : 'password'} id='password' value={password} onChange={onChange} placeholder='Password' />
-            {showPassword ? 
-            <AiFillEyeInvisible className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword((prevState) => !prevState)} /> 
-            : <AiFillEye className='absolute right-3 top-3 text-xl cursor-pointer' onClick={() => setShowPassword((prevState) => !prevState)} />}
+            {letTheEye()}
             </div>
             <div className='flex justify-between whitespace-nowrap text-sm sm:text-lg'>
               <p className='mb-6'>Don't have an account?
